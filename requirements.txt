@@ -4,6 +4,7 @@ boto==2.6.0
 dj-database-url==0.2.1
 django-extensions==0.9
 django-misc==0.0.6
+django-registration==0.8
 django-storages==1.1.5
 django-tastypie==0.9.11
 mimeparse==0.1.3
