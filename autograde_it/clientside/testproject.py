@@ -3,17 +3,17 @@ from urllib import urlretrieve
 from urllib2 import Request, build_opener, urlopen, HTTPError
 from json import loads, dumps
 from os import mkdir, rmdir
+from os import killpg, setsid, system
 from subprocess import Popen, PIPE, STDOUT
 from getpass import getpass
 from shutil import rmtree
 from uuid import uuid4
 from time import time
 from threading import Thread
-from os import killpg, setsid
 from signal import SIGTERM
 
 # Options and settings
-debug = True
+debug = False
 trimresults = True
 
 class TestCase:
@@ -121,15 +121,19 @@ class Tester:
         self.project_url = '/autograde/api/data/project/%d/' % self.proj
         self.test_dir = '.%stest' % self.uname
         self.user_uri_url = 'autograde/api/data/user/?format=json&username=%s' % self.uname
-
+        
+        self.setup()
         self.getCases()
 
-    def getCases(self):
+    def setup(self):
         try:
             rmtree(self.test_dir)
         except:
             pass
         mkdir(self.test_dir)
+        system('cp -r project_files/* %s' % self.test_dir)
+
+    def getCases(self):
         print "Downloading test cases..."
         tests = self.getTests()
         if debug: print tests
