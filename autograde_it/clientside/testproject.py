@@ -131,13 +131,8 @@ class Tester:
             pass
         mkdir(self.test_dir)
         print "Downloading test cases..."
-<<<<<<< HEAD
         tests = self.getTests()
         if debug: print tests
-=======
-        tests = response_json['objects'][0]['tests']
-        print tests
->>>>>>> 4e014fa32f8cdf420c1f1ed734979e5c319db192
         for case in tests:
             case_id  = case['id']
             media_url = case['file']
