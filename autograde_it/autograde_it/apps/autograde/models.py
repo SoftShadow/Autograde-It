@@ -3,6 +3,7 @@ from django.db.models import permalink
 from zipfile import ZipFile
 
 from django.contrib.auth.models import User
+from django_extensions.db.fields import *
 
 from tastypie.models import create_api_key
 models.signals.post_save.connect(create_api_key, sender=User)
@@ -10,7 +11,11 @@ models.signals.post_save.connect(create_api_key, sender=User)
 class Project(models.Model):
     instructors = models.ManyToManyField(User)
     title = models.CharField(max_length=100)
+    created = CreationDateTimeField()
 
+    def modified(self):
+        return self.get_meta().modified
+    @property
     def get_meta(self):
         """
             Get the meta data for this project.
@@ -70,11 +75,13 @@ class ProjectMeta(models.Model):
     due_date = models.DateTimeField(null=True,help_text="Time in 24 hour format")
     release_date = models.DateTimeField(null=True,help_text="Time in 24 hour format")
     description = models.TextField(null=True)
+    modified = ModificationDateTimeField()
 
 class ProjectFile(models.Model):
     project = models.ForeignKey(Project)
     file = models.FileField(upload_to="project_files")
     is_student_viewable = models.BooleanField(default=False)
+    created = CreationDateTimeField()
     def __unicode__(self):
         return str(self.file)
     @permalink
@@ -85,6 +92,7 @@ class TestCase(models.Model):
     project = models.ForeignKey(Project)
     file = models.FileField(upload_to="tests")
     expected_results = models.TextField(null=True)
+    created = CreationDateTimeField()
     def __unicode__(self):
         return str(self.file)
     @permalink
@@ -98,6 +106,7 @@ class TestResult(models.Model):
 
     passed = models.BooleanField(default=False)
     was_checked = models.BooleanField(default=False)
+    created = CreationDateTimeField()
     
     def check(self):
         """

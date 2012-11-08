@@ -11,7 +11,8 @@ api = Api(api_name='data')
 api.register(ProjectResource())
 api.register(TestCaseResource())
 api.register(TestResultResource())
-api.register(UserResource())
+api.register(ProjectFileResource())
+api.register(ProjectMetaResource())
 
 urlpatterns = patterns('autograde.views',
     (r'^api/', include(api.urls)),

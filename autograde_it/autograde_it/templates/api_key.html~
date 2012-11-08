@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block head_title %}API Key{% endblock %}
+
+{% block content %}
+    <h4>Your key is: {{api_key.key}}</h4>
+{% endblock %}
