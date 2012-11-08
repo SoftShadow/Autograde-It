@@ -181,11 +181,11 @@ class Tester:
 
 
     def getUserUri(self):
-        request = Request(self.url+self.user_uri_url)
-        opener = build_opener()
-        response = loads(opener.open(request).read())
-        return response['objects'][0]['resource_uri']
-
+        #request = Request(self.url+self.user_uri_url)
+        #opener = build_opener()
+        #response = loads(opener.open(request).read())
+        #return response['objects'][0]['resource_uri']
+        return ''
 
     def runTests(self):
         if debug: print "Running the test cases..."
