@@ -5,15 +5,18 @@ from zipfile import ZipFile
 from django.contrib.auth.models import User
 from django_extensions.db.fields import *
 
-from tastypie.models import create_api_key
-models.signals.post_save.connect(create_api_key, sender=User)
-
 class Project(models.Model):
+    """
+        The base model representing a single assignment or project.
+    """
     instructors = models.ManyToManyField(User)
     title = models.CharField(max_length=100)
     created = CreationDateTimeField()
 
     def modified(self):
+        """
+            Returns a datetime of the last time this project's meta data was modified.
+        """
         return self.get_meta().modified
     @property
     def get_meta(self):
@@ -29,9 +32,6 @@ class Project(models.Model):
             raise ValueError("AUTOGRADE_PROJECT_META_MODEL invalid")
         return model.objects.get(project=self)
 
-    def __unicode__(self):
-        return self.title
-
     def zipfile(self):
         """
             Return the path to a zipfile for this project.
@@ -40,6 +40,7 @@ class Project(models.Model):
         import os
         import uuid
         from django.conf import settings
+        #create a zip file in the AUTOGRADE_ZIP_TMP folder
         zipfile_name = os.path.join(settings.AUTOGRADE_ZIP_TMP,str(uuid.uuid4()))
         z = ZipFile(zipfile_name,"w")
         for pf in self.projectfile_set.filter(is_student_viewable=True):
@@ -51,14 +52,16 @@ class Project(models.Model):
             os.remove(file_name)
         z.write("autograde_it/clientside/testproject.py","testproject.py")
         z.close()
-
+        #store the data from the zipfile into memory and then delete the file from disk
         data = open(zipfile_name,"rb").read()
         os.remove(zipfile_name)
-        return data
+        return data # return the data stored in memory
 
     @permalink
     def get_absolute_url(self):
         return ("project_detail",[self.pk])
+    def __unicode__(self):
+        return self.title
 
 class ProjectMeta(models.Model):
     """
@@ -69,7 +72,7 @@ class ProjectMeta(models.Model):
             One might want to have a pdf instead of just text for the description.
             Or one might want to include grading options here.
 
-        This is intended to simply be an example.
+        _This is intended to simply be an example._
     """
     project = models.OneToOneField(Project)
     due_date = models.DateTimeField(null=True,help_text="Time in 24 hour format")
@@ -78,9 +81,16 @@ class ProjectMeta(models.Model):
     modified = ModificationDateTimeField()
 
 class ProjectFile(models.Model):
+    """
+        Part of the framework/skeleton code that is provided to the students.
+
+        project - link back to the project that this test is part of.
+        file -  any type of file that the instructor may wish to give the students.
+        is_student_viewable - indicates if the students should have access to this file.
+    """
     project = models.ForeignKey(Project)
     file = models.FileField(upload_to="project_files")
-    is_student_viewable = models.BooleanField(default=False)
+    is_student_viewable = models.BooleanField(default=True)
     created = CreationDateTimeField()
     def __unicode__(self):
         return str(self.file)
@@ -89,10 +99,18 @@ class ProjectFile(models.Model):
         return ("projectfile_detail",[self.pk])
 
 class TestCase(models.Model):
+    """
+        Stores the information about a single test case.
+
+        project - link back to the project that this test is part of.
+        file - an executable file that runs student code and outputs results.
+        expected_results - the output of "file" in the case of a successful test.
+    """
     project = models.ForeignKey(Project)
     file = models.FileField(upload_to="tests")
     expected_results = models.TextField(null=True)
     created = CreationDateTimeField()
+
     def __unicode__(self):
         return str(self.file)
     @permalink
@@ -100,6 +118,18 @@ class TestCase(models.Model):
         return ("testcase_detail",[self.pk])
 
 class TestResult(models.Model):
+    """
+        The result of a test. 
+        
+        The testing framework will create this model via a post request.
+
+        test_case - the test case that was run.
+        results - the output of the test case.
+        user - the user that submitted.
+
+        passed - True if results == test_case.expected_results.
+        was_checked - True if the correctness of "results" has been checked.
+    """
     test_case = models.ForeignKey(TestCase)
     results = models.TextField()
     user = models.ForeignKey(User)
@@ -126,6 +156,9 @@ class TestResult(models.Model):
         return ("testresult_detail",[self.pk])
 
 def check_testresult(sender, instance, created, **kwargs):
+    """
+        When a TestResult is created, check the results and mark it as passed/failed.
+    """
     if created:
         instance.check()
 models.signals.post_save.connect(check_testresult, sender=TestResult)

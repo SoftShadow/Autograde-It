@@ -1,5 +1,8 @@
 from django.db import models
 
+from tastypie.models import create_api_key
+models.signals.post_save.connect(create_api_key, sender=User)
+
 class UserFeedback(models.Model):
     make_project = models.TextField(name="Please first create a project using the 'Create Project' button on the homepage. If this process is confusing, or could otherwise be improved, please let us know:")
     upload_files = models.TextField(name="After creating the project, please upload a few project files and test files for the project. The project files will be included in the zip file that the students download, and the test files will be used to test the project. Each test file should have some expected results that indicate what the response of the output of the test case should be for a successful test. If this process is confusing, or could otherwise be improved, please let us know:")

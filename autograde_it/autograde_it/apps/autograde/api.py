@@ -1,4 +1,3 @@
-# myapp/api.py
 from tastypie.resources import ModelResource
 from tastypie.authentication import BasicAuthentication,ApiKeyAuthentication
 from tastypie.authorization import DjangoAuthorization, Authorization
