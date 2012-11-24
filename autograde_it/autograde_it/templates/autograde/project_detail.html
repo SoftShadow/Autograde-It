@@ -1,10 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h3>Project: {{project}}</h3>
+    <h3>Project: <a href="{{project.get_absolute_url}}">{{project}}</a></h3>
     <a href="{% url get_project_zip project.pk %}" class="btn btn-success" >Get Zipped Files</a>
     <hr />
-    <h4>Project Files</h4>
+    <h4>Base Directories</h4>
+    {% for directory in project.base_directories %}
+        <div class="row-fluid">
+            <div class="span12">
+                <a href="{{directory.get_absolute_url}}">{{directory}}</a>
+            </div>
+        </div>
+    {% endfor %}
+    <a href="{% url directory_create project.pk %}">Add Directory</a>
+    <hr />
+    <h4>All Project Files</h4>
     {% for file in project.projectfile_set.all %}
         <div class="row-fluid">
             <div class="span12">
@@ -15,7 +25,7 @@
     {% endfor %}
     <a href="{% url projectfile_create project.pk %}">Add Project File</a>
     <hr />
-    <h4>Tests</h4>
+    <h4>All Tests</h4>
     {% for test_case in project.testcase_set.all %}
         <div class="row-fluid">
             <div class="span12">
