@@ -5,6 +5,8 @@ from zipfile import ZipFile
 from django.contrib.auth.models import User
 from django_extensions.db.fields import *
 
+import os
+
 class Project(models.Model):
     """
         The base model representing a single assignment or project.
@@ -12,6 +14,9 @@ class Project(models.Model):
     instructors = models.ManyToManyField(User)
     title = models.CharField(max_length=100)
     created = CreationDateTimeField()
+
+    def base_directories(self):
+        return self.directory_set.filter(directory=None)
 
     def modified(self):
         """
@@ -37,19 +42,29 @@ class Project(models.Model):
             Return the path to a zipfile for this project.
             Contains all of the student_viewable project files and the testing framework file.
         """
-        import os
         import uuid
         from django.conf import settings
         #create a zip file in the AUTOGRADE_ZIP_TMP folder
         zipfile_name = os.path.join(settings.AUTOGRADE_ZIP_TMP,str(uuid.uuid4()))
         z = ZipFile(zipfile_name,"w")
-        for pf in self.projectfile_set.filter(is_student_viewable=True):
+        def add_project_file(pf,dir_path=""):
             file_name = os.path.join(settings.AUTOGRADE_ZIP_TMP,str(uuid.uuid4()))
             f = open(file_name,"w")
             f.write(pf.file.read())
             f.close()
-            z.write(file_name,pf.file.name)
+            z.write(file_name,os.path.join(dir_path,os.path.basename(pf.file.name)))
             os.remove(file_name)
+        def add_directory(directory):
+            for pf in directory.projectfile_set.all():
+                add_project_file(pf,directory.path())
+            for sub_dir in directory.directory_set.all():
+                add_directory(sub_dir)
+
+        for pf in self.projectfile_set.filter(is_student_viewable=True).filter(directory=None):
+            add_project_file(pf)
+        for directory in self.base_directories():
+            add_directory(directory)
+
         z.write("autograde_it/clientside/testproject.py","testproject.py")
         z.close()
         #store the data from the zipfile into memory and then delete the file from disk
@@ -80,6 +95,25 @@ class ProjectMeta(models.Model):
     description = models.TextField(null=True)
     modified = ModificationDateTimeField()
 
+class Directory(models.Model):
+    """
+        A model that represents a directory in the filesystem.
+    """
+    project = models.ForeignKey(Project)
+    directory = models.ForeignKey("self",null=True,blank=True,related_name="directory_set")
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.name
+    @permalink
+    def get_absolute_url(self):
+        return ("directory_detail",[self.pk])
+    def path(self):
+        if self.directory:
+            return os.path.join(self.directory.path(),self.name)
+        else:
+            return self.name
+
 class ProjectFile(models.Model):
     """
         Part of the framework/skeleton code that is provided to the students.
@@ -88,6 +122,7 @@ class ProjectFile(models.Model):
         file -  any type of file that the instructor may wish to give the students.
         is_student_viewable - indicates if the students should have access to this file.
     """
+    directory = models.ForeignKey(Directory,null=True,blank=True)
     project = models.ForeignKey(Project)
     file = models.FileField(upload_to="project_files")
     is_student_viewable = models.BooleanField(default=True)
@@ -106,6 +141,7 @@ class TestCase(models.Model):
         file - an executable file that runs student code and outputs results.
         expected_results - the output of "file" in the case of a successful test.
     """
+    directory = models.ForeignKey(Directory,null=True,blank=True)
     project = models.ForeignKey(Project)
     file = models.FileField(upload_to="tests")
     expected_results = models.TextField(null=True)

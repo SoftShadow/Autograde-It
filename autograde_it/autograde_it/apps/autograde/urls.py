@@ -24,6 +24,7 @@ urlpatterns = patterns('autograde.views',
     url(r'^create/project/$', "project_create", name='project_create'),
 
     #project meta
+    url(r'^directory/(?P<pk>[\w\._-]+)$', DetailView.as_view(model=Directory), name='directory_detail'),
     url(r'^projectmeta/(?P<pk>[\w\._-]+)/edit$', projectmeta_edit, name='projectmeta_edit'),
 
     #testcase
@@ -31,11 +32,17 @@ urlpatterns = patterns('autograde.views',
     url(r'^testcase/(?P<pk>[\w\._-]+)/edit$', testcase_edit, name='testcase_edit'),
     url(r'^testcase/(?P<pk>[\w\._-]+)/delete$', testcase_delete, name='testcase_delete'),
     url(r'^testcase/(?P<project_pk>[\w\._-]+)/create$', testcase_create, name='testcase_create'),
+    url(r'^testcase/(?P<project_pk>[\w\._-]+)/(?P<directory_pk>[\w\._-]+)/create$', testcase_create, name='sub_testcase_create'),
+
+    #directory
+    url(r'^directory/(?P<project_pk>[\w\._-]+)/create$', directory_create, name='directory_create'),
+    url(r'^directory/(?P<project_pk>[\w\._-]+)/(?P<directory_pk>[\w\._-]+)/create$', directory_create, name='sub_directory_create'),
 
     #project file
     url(r'^projectfile/(?P<pk>[\w\._-]+)$', DetailView.as_view(model=ProjectFile), name='projectfile_detail'),
     url(r'^projectfile/(?P<pk>[\w\._-]+)/edit$', projectfile_edit, name='projectfile_edit'),
     url(r'^projectfile/(?P<project_pk>[\w\._-]+)/create$', projectfile_create, name='projectfile_create'),
+    url(r'^projectfile/(?P<project_pk>[\w\._-]+)/(?P<directory_pk>[\w\._-]+)/create$', projectfile_create, name='sub_projectfile_create'),
     url(r'^projectfile/(?P<pk>[\w\._-]+)/delete$', projectfile_delete, name='projectfile_delete'),
 
     #test results

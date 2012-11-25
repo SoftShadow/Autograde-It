@@ -8,6 +8,25 @@ from django.contrib.auth.decorators import login_required
 from autograde.models import *
 from autograde.forms import *
 
+
+def create(request,project_pk,directory_pk,form_class,template_name):
+    project = get_object_or_404(Project,pk=project_pk)
+    directory = None
+    if directory_pk:
+        directory = get_object_or_404(Directory,pk=directory_pk)
+
+    form = form_class()
+    if request.method=="POST":
+        form = form_class(request.POST,request.FILES)
+        form.instance.project = project
+        form.instance.directory = directory
+        if form.is_valid():
+            form.save()
+            if directory:
+                return HttpResponseRedirect(directory.get_absolute_url())
+            return HttpResponseRedirect(project.get_absolute_url())
+    return render_to_response(template_name,{"form":form},context_instance=RequestContext(request))
+
 @login_required
 def project_create(request,
         form_class=ProjectCreateForm,
@@ -40,17 +59,11 @@ def testcase_delete(request,pk):
     return HttpResponse("Deleted")
 @login_required
 def testcase_create(request,project_pk,
+        directory_pk=None,
         form_class=TestCaseForm,
         template_name="autograde/testcase_edit.html"):
-    project = get_object_or_404(Project,pk=project_pk)
-    form = form_class()
-    if request.method=="POST":
-        form = form_class(request.POST,request.FILES)
-        form.instance.project = project
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("project_detail",args=(project.pk,)))
-    return render_to_response(template_name,{"form":form},context_instance=RequestContext(request))
+    return create(request,project_pk,directory_pk,form_class,template_name)
+
 @login_required
 def testcase_edit(request,pk,
         form_class=TestCaseForm,
@@ -69,19 +82,14 @@ def projectfile_delete(request,pk):
     pf = get_object_or_404(ProjectFile,pk=pk)
     pf.delete()
     return HttpResponse("Deleted")
+
 @login_required
 def projectfile_create(request,project_pk,
+        directory_pk=None,
         form_class=ProjectFileForm,
         template_name="autograde/projectfile_edit.html"):
-    project = get_object_or_404(Project,pk=project_pk)
-    form = form_class()
-    if request.method=="POST":
-        form = form_class(request.POST,request.FILES)
-        form.instance.project = project
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("project_detail",args=(project.pk,)))
-    return render_to_response(template_name,{"form":form},context_instance=RequestContext(request))
+    return create(request,project_pk,directory_pk,form_class,template_name)
+
 @login_required
 def projectfile_edit(request,pk,
         form_class=ProjectFileForm,
@@ -99,3 +107,10 @@ def projectfile_edit(request,pk,
 def get_project_zip(request,pk):
     project = get_object_or_404(Project,pk=pk)
     return HttpResponse(project.zipfile(),content_type='application/zip')
+
+@login_required
+def directory_create(request,project_pk,
+        directory_pk=None,
+        form_class=DirectoryForm,
+        template_name="autograde/directory_edit.html"):
+    return create(request,project_pk,directory_pk,form_class,template_name)

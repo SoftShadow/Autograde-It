@@ -38,3 +38,7 @@ class ProjectFileForm(forms.ModelForm):
     class Meta:
         model = ProjectFile
         fields = ("file","is_student_viewable")
+class DirectoryForm(forms.ModelForm):
+    class Meta:
+        model = Directory
+        fields = ("name",)
