@@ -1,0 +1,41 @@
+Autograder transcript for Project 1: Search
+Starting on 11-14 at 1:02:05
+%%% Autograder messages: %%%
+
+Question q6
+===========
+Passed admissibility test ct1
+Passed admissibility test ct2
+Passed admissibility test ct3
+Passed non-triviality test ct3
+*** For mediumCorners, the A* agent expanded 774 nodes
+Thresholds: [2000, 1600, 1200]
+Passed consistency test ct1-A
+Passed consistency test ct1-B
+Passed consistency test ct2-A
+Passed consistency test ct2-B
+Passed consistency test ct3-A
+Passed consistency test ct3-B
+Passed H > 0 ct1
+Passed H > 0 ct2
+Passed H > 0 ct3
+Passed H(goal) == 0 test ct1
+Passed H(goal) == 0 test ct2
+Passed H(goal) == 0 test ct3
+
+Finished at 1:02:05
+%%%  %%%
+%%% Autograder scores: %%%
+@@@PASSED SANITY CHECKS@@@
++++ MINIMUM SCORE FOR THIS SUBMISSION +++
+Question q6: 3/3
+%%% -- Question q6: 3/3 %%%
+	For mediumCorners, the A* agent expanded 774 nodes
+	
+	Autograder scores:
+	-- Question q6: 3/3
+%%% ------------------- %%%
+%%% Total: 3/3 %%%
+3
+%%%  %%%
+%%% Note: This total score represents the autograder's assessment of your project score.  This score is never the final word on your grade, but it is a lower bound.  The staff may return points mistakenly taken away by the autograder -- let us know if you think the autograder has gone rogue. %%%

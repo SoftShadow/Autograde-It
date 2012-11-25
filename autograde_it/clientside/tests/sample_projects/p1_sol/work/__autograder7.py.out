@@ -1,0 +1,71 @@
+Autograder transcript for Project 1: Search
+Starting on 11-14 at 1:02:05
+%%% Autograder messages: %%%
+
+Question q7
+===========
+Passed admissibility test Test 7
+Passed admissibility test Test 6
+Passed admissibility test Test 5
+Passed admissibility test Test 4
+Passed admissibility test Test 3
+Passed admissibility test Test 2
+Passed admissibility test Test 1
+Passed admissibility test Test 8
+Passed admissibility test Test 9
+Passed admissibility test Test 10
+Passed admissibility test Test 11
+Passed admissibility test Test 13
+Passed admissibility test Test 12
+Passed non-triviality test Test 12
+*** For trickySearch, the A* agent expanded 8763 nodes
+Thresholds: [15000, 12000, 9000, 7000]
+*** For trickySearch, the A* agent failed to expand fewer than 7000 nodes, -1 point
+Passed consistency test Test 7
+Passed consistency test Test 6
+Passed consistency test Test 5
+Passed consistency test Test 4
+Passed consistency test Test 3
+Passed consistency test Test 2
+Passed consistency test Test 1
+Passed consistency test Test 8
+Passed consistency test Test 9
+Passed consistency test Test 10
+Passed consistency test Test 11
+Passed consistency test Test 13
+Passed consistency test Test 12
+Passed H > 0 Test 7
+Passed H > 0 Test 6
+Passed H > 0 Test 5
+Passed H > 0 Test 4
+Passed H > 0 Test 3
+Passed H > 0 Test 2
+Passed H > 0 Test 1
+Passed H > 0 Test 8
+Passed H > 0 Test 9
+Passed H > 0 Test 10
+Passed H > 0 Test 11
+Passed H > 0 Test 13
+Passed H > 0 Test 12
+Passed H(goal) == 0 test Test 1
+Passed H(goal) == 0 test Test 2
+Passed H(goal) == 0 test Test 3
+Passed H(goal) == 0 test Test 12
+
+Finished at 1:02:11
+%%%  %%%
+%%% Autograder scores: %%%
+@@@PASSED SANITY CHECKS@@@
++++ MINIMUM SCORE FOR THIS SUBMISSION +++
+Question q7: 4/5
+%%% -- Question q7: 4/5 %%%
+	For trickySearch, the A* agent expanded 8763 nodes
+	For trickySearch, the A* agent failed to expand fewer than 7000 nodes, -1 point
+	
+	Autograder scores:
+	-- Question q7: 4/5
+%%% ------------------- %%%
+%%% Total: 4/5 %%%
+4
+%%%  %%%
+%%% Note: This total score represents the autograder's assessment of your project score.  This score is never the final word on your grade, but it is a lower bound.  The staff may return points mistakenly taken away by the autograder -- let us know if you think the autograder has gone rogue. %%%
