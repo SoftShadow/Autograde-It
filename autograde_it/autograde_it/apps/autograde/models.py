@@ -76,7 +76,8 @@ class Project(models.Model):
         for directory in self.base_directories():
             add_directory(directory)
 
-        z.write("autograde_it/clientside/testproject.py","testproject.py")
+        test_file_name = os.path.join(base_dir,"testproject.py")
+        z.write("autograde_it/clientside/testproject.py",test_file_name)
         z.close()
         #store the data from the zipfile into memory and then delete the file from disk
         data = open(zipfile_name,"rb").read()
