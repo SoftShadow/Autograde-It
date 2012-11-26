@@ -1,0 +1,36 @@
+Autograder transcript for Project 1: Search
+Starting on 11-14 at 1:02:11
+%%% Autograder messages: %%%
+
+Question extra
+==============
+[SearchAgent] using function depthFirstSearch
+[SearchAgent] using problem type PositionSearchProblem
+Path found with cost 350.
+Pacman emerges victorious! Score: 2360
+Average Score: 2360.0
+Scores:        2360
+Win Rate:      1/1 (1.00)
+Record:        Win
+*** Total time: 0 seconds.
+*** Number of total moves: 350
+*** Extra credit run-time: 0.51
+*** Extra credit total moves 350
+
+Finished at 1:02:12
+%%%  %%%
+%%% Autograder scores: %%%
+@@@PASSED SANITY CHECKS@@@
++++ MINIMUM SCORE FOR THIS SUBMISSION +++
+Question extra: 0/0
+%%% -- Question extra: 0/0 %%%
+	Extra credit run-time: 0.51
+	Extra credit total moves 350
+	
+	Autograder scores:
+	-- Question extra: 0/0
+%%% ------------------- %%%
+%%% Total: 0/0 %%%
+0
+%%%  %%%
+%%% Note: This total score represents the autograder's assessment of your project score.  This score is never the final word on your grade, but it is a lower bound.  The staff may return points mistakenly taken away by the autograder -- let us know if you think the autograder has gone rogue. %%%

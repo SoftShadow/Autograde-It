@@ -1,0 +1,5 @@
+due-date 201209080059
+req search.py
+req searchAgents.py
+wait-time 300
+partner-allowed
