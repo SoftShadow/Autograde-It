@@ -48,10 +48,14 @@ class Project(models.Model):
         zipfile_name = os.path.join(settings.AUTOGRADE_ZIP_TMP,str(uuid.uuid4()))
         z = ZipFile(zipfile_name,"w")
 
+        from django.template.defaultfilters import slugify
+        base_dir = slugify(self.title)
+
         def add_project_file(pf,dir_path=""):
             """
                 Add the project file to the zipfile
             """
+            dir_path = os.path.join(base_dir,dir_path)
             file_name = os.path.join(settings.AUTOGRADE_ZIP_TMP,str(uuid.uuid4()))
             f = open(file_name,"w")
             f.write(pf.file.read())
