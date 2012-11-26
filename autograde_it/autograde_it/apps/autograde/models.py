@@ -47,7 +47,11 @@ class Project(models.Model):
         #create a zip file in the AUTOGRADE_ZIP_TMP folder
         zipfile_name = os.path.join(settings.AUTOGRADE_ZIP_TMP,str(uuid.uuid4()))
         z = ZipFile(zipfile_name,"w")
+
         def add_project_file(pf,dir_path=""):
+            """
+                Add the project file to the zipfile
+            """
             file_name = os.path.join(settings.AUTOGRADE_ZIP_TMP,str(uuid.uuid4()))
             f = open(file_name,"w")
             f.write(pf.file.read())
@@ -55,6 +59,9 @@ class Project(models.Model):
             z.write(file_name,os.path.join(dir_path,os.path.basename(pf.file.name)))
             os.remove(file_name)
         def add_directory(directory):
+            """
+                Recursively add the contents of this directory to the zipfile
+            """
             for pf in directory.projectfile_set.all():
                 add_project_file(pf,directory.path())
             for sub_dir in directory.directory_set.all():
@@ -178,10 +185,29 @@ class TestResult(models.Model):
         """
             Check this test result against its test case.
         """
-        if self.results == self.test_case.expected_results:
-            self.passed = True
-        else:
-            self.passed = False
+        def raw_compare(a,b):
+            """
+                Compare the two inputs and mark the test as passed if they are the same
+            """
+            if a == b:
+                self.passed = True
+            else:
+                self.passed = False
+        def json_compare(a,b):
+            """
+                Compare the two json decoded inputs and mark the test as passed if they are the same objects
+            """
+            import json
+            if json.loads(a) == json.loads(b):
+                self.passed = True
+            else:
+                self.passed = False
+
+        try:
+            json_compare(self.results,self.test_case.expected_results)
+        except ValueError: #if the objects do not json decode properly, revert to the raw comparison
+            raw_compare(self.results,self.test_case.expected_results)
+
         self.was_checked = True
         self.save()
 
