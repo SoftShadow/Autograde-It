@@ -57,10 +57,25 @@ class Project(models.Model):
                     l.append(item)
             l.append(b)
             return l
+        def remove_banned_directories(names):
+            """
+                Filter out the paths that are banned
+            """
+            #should be moved to settings.py
+            banned_directories = (
+                "__MACOSX",
+            )
+            new_names = []
+            for full_name,l in names:
+                if l[0] not in banned_directories:
+                    new_names.append((full_name,l))
+            return new_names
+
 
         names = [(name,path_split(name)) for name in z.namelist()]
-        dirs = {}
+        names = remove_banned_directories(names)
 
+        dirs = {}
         changed = True
         i = 1
         while changed:
@@ -74,8 +89,8 @@ class Project(models.Model):
                         d = dirs["/".join(item[0:index])]
                     else:
                         d = Directory.objects.create(project=self,directory=previous,name=item)
-                        previous = d
                         dirs["/".join(item[0:index])] = d
+                    previous = d
 
                 from django.core.files import File
                 pf = ProjectFile.objects.create(directory=d,project=self)
@@ -110,9 +125,12 @@ class Project(models.Model):
             dir_path = os.path.join(base_dir,dir_path)
             file_name = os.path.join(settings.AUTOGRADE_ZIP_TMP,str(uuid.uuid4()))
             f = open(file_name,"w")
-            f.write(pf.file.read())
+            try:
+                f.write(pf.file.read())
+            except ValueError:
+                f.write("FAILED TO ADD FILE\n")
             f.close()
-            z.write(file_name,os.path.join(os.path.join(dir_path,"project_files"),os.path.basename(pf.file.name)))
+            z.write(file_name,os.path.join(dir_path,os.path.basename(pf.file.name)))
             os.remove(file_name)
         def add_directory(directory):
             """
@@ -192,7 +210,7 @@ class ProjectFile(models.Model):
     is_student_viewable = models.BooleanField(default=True)
     created = CreationDateTimeField()
     def __unicode__(self):
-        return str(self.file)
+        return os.path.split(str(self.file))[1]
     @permalink
     def get_absolute_url(self):
         return ("projectfile_detail",[self.pk])
