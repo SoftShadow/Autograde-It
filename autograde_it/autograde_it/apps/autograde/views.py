@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 
 from autograde.models import *
 from autograde.forms import *
-
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
 def create(request,project_pk,directory_pk,form_class,template_name):
     project = get_object_or_404(Project,pk=project_pk)
@@ -116,6 +116,7 @@ def directory_create(request,project_pk,
     return create(request,project_pk,directory_pk,form_class,template_name)
 
 @login_required
+@csrf_exempt
 def addzip(request,pk,
         form_class=ZipfileForm,
         template_name="autograde/project_addzip.html"):

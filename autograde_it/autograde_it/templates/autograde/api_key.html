@@ -1,0 +1,40 @@
+{% extends "autograde/base.html" %}
+{% load static %}
+
+{% block content %}
+    <h3>Project</h3>
+    <ul>
+        <li>/autograde/api/data/project/</li>
+    </ul>
+    <hr />
+    
+    <h3>Project Meta</h3>
+    <ul>
+        <li>/autograde/api/data/project_meta/</li>
+    </ul>
+    <hr />
+
+    <h3>Project Zip</h3>
+    <ul>
+        <li><strong>Get zipfile</strong>: /autograde/project/[project_id]/addzip/</li>
+        <li><strong>Add zipfile</strong>: /autograde/projectzip/[project_id]/</li>
+    </ul>
+    <hr />
+
+    <h3>Project Files</h3>
+    <ul>
+        <li>/autograde/api/data/project_file/</li>
+    </ul>
+    <hr />
+
+    <h3>Test Case</h3>
+    <ul>
+        <li>/autograde/api/data/test_case/</li>
+    </ul>
+    <hr />
+
+    <h3>Test Result</h3>
+    <ul>
+        <li>/autograde/api/data/test_result/</li>
+    </ul>
+{% endblock %}

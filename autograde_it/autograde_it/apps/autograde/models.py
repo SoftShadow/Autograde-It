@@ -128,7 +128,7 @@ class Project(models.Model):
             try:
                 f.write(pf.file.read())
             except ValueError:
-                f.write("FAILED TO ADD FILE\n")
+                f.write("FAILED TO ADD FILE CONTENTS\n")
             f.close()
             z.write(file_name,os.path.join(dir_path,os.path.basename(pf.file.name)))
             os.remove(file_name)

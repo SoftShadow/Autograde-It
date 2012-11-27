@@ -1,4 +1,5 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic.simple import direct_to_template
 from django.conf.urls import patterns, include, url
 from tastypie.api import Api
 from autograde.api import *
@@ -15,7 +16,8 @@ api.register(ProjectFileResource())
 api.register(ProjectMetaResource())
 
 urlpatterns = patterns('autograde.views',
-    (r'^api/', include(api.urls)),
+    url(r'^api/', include(api.urls)),
+    url(r'^api/key$',direct_to_template,{"template":"autograde/api_key.html"},name="api_key"),
     url(r'^$', login_required(ListView.as_view(model=Project,template_name="autograde/index.html")), name='autograde_home'),
 
     #project
