@@ -107,7 +107,6 @@ class TestCase:
             and 'solution'. If this fails, make a new json object 
             with empty 'meta' and 'solution' fields.
         """
-        return self.result
         if self.error:
             return 'Test threw an exception'
         else:
@@ -157,11 +156,9 @@ class Tester:
         through the prompt, or retrieve it from the settings.json
         if it exists.
         """
-        def newInfo():
-            """
-            Collect credential information from the user.
-            """
-
+        try:
+            self.loadSettings()
+        except:        
             print "Ready to begin testing. Please enter your credentials."
             uname = raw_input('Username: ')
             if uname is not '':
@@ -180,20 +177,6 @@ class Tester:
                         'case_ids': [],
                         'case_dir': '.' + str(uuid4())}
             mkdir(self.settings['case_dir'])
-
-        try:
-            if debug: print 'attempting to load saved credentials'
-            self.loadSettings()
-            print "Found saved credentials for %s" % self.settings['uname']
-            yn = raw_input("Do you want to login as a different user? (Y/N): ")
-            while yn.lower() not in ['y','n']:
-                yn = raw_input("Please enter Y or N: ")
-            if yn.lower() == 'y':
-                newInfo()
-            print '*Logged in as %s' % self.settings['uname']
-        except BaseException as e:     
-            print e
-            newInfo()
 
     def loadSettings(self):
         self.settings = load(open('.settings.json', 'r'))
@@ -283,7 +266,7 @@ class Tester:
             print "Got test %s" % case_id
             self.settings['case_names'].append(case_name)
             self.settings['case_ids'].append(case_id)
-        print "*Done downloading tests\n"
+        print "Done downloading tests\n"
 
     def getTests(self):
         """
@@ -322,7 +305,6 @@ class Tester:
 
 
     def putResults(self, key):
-        print "Sending your test results to the server"
         for id,test in self.settings['cases'].items():
             payload = dumps(test.asDict())
             if debug: print payload, self.response_url
@@ -331,10 +313,11 @@ class Tester:
                 response = urlopen(request)
                 if debug: print response.read()
                 print 'Successfully sent case %s' % test.case_id
-                if debug: print test.asDict()
+                if debug: print payload
                 response.close()
             except HTTPError, e:
-                print 'The submission for test %s failed with error %s' % (test.case_id, e)
+                if debug: print 'The submission for test %s failed' % test.case_id
+                if debug: print e
                 if debug: print e.read()
 
     def cleanup(self):

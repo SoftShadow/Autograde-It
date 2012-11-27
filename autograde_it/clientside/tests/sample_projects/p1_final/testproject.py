@@ -18,7 +18,7 @@ else:
     from os import killpg, setsid
 
 # Options and settings
-debug = True
+debug = False
 trimresults = True
 
 class TestCase:
@@ -107,6 +107,7 @@ class TestCase:
             and 'solution'. If this fails, make a new json object 
             with empty 'meta' and 'solution' fields.
         """
+        return self.result
         if self.error:
             return 'Test threw an exception'
         else:
@@ -187,7 +188,7 @@ class Tester:
             yn = raw_input("Do you want to login as a different user? (Y/N): ")
             while yn.lower() not in ['y','n']:
                 yn = raw_input("Please enter Y or N: ")
-            if yn == 'y':
+            if yn.lower() == 'y':
                 newInfo()
             print '*Logged in as %s' % self.settings['uname']
         except BaseException as e:     
@@ -330,7 +331,7 @@ class Tester:
                 response = urlopen(request)
                 if debug: print response.read()
                 print 'Successfully sent case %s' % test.case_id
-                if debug: print payload
+                if debug: print test.asDict()
                 response.close()
             except HTTPError, e:
                 print 'The submission for test %s failed with error %s' % (test.case_id, e)
