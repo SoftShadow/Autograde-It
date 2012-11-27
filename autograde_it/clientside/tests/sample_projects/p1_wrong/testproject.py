@@ -18,7 +18,7 @@ else:
     from os import killpg, setsid
 
 # Options and settings
-debug = False
+debug = True
 trimresults = True
 
 class TestCase:
