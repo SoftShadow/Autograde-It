@@ -262,7 +262,7 @@ class TestResult(models.Model):
             b_json = json.loads(b) if isinstance(b,str) else b
             b_json = json.loads(str(b)) if isinstance(b,unicode) else b
 
-            if a_json == b_json:
+            if a_json['solution'] == b_json['solution']:
                 self.passed = True
             else:
                 self.passed = False
