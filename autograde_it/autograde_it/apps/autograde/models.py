@@ -267,10 +267,12 @@ class TestResult(models.Model):
             else:
                 self.passed = False
 
+        """
         try:
             json_compare(self.results,self.test_case.expected_results)
         except ValueError: #if the objects do not json decode properly, revert to the raw comparison
-            raw_compare(self.results,self.test_case.expected_results)
+        """
+        raw_compare(self.results,self.test_case.expected_results)
         """
         except TypeError as e: #something went really badly wrong.....
             import traceback
