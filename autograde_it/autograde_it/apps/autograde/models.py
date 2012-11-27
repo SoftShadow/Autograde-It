@@ -262,7 +262,7 @@ class TestResult(models.Model):
             b_json = json.loads(b) if isinstance(b,str) else b
             b_json = json.loads(str(b)) if isinstance(b,unicode) else b
 
-            if a_json['solution'] == b_json['solution']:
+            if a_json[u'raw'] == b_json[u'raw']:
                 self.passed = True
             else:
                 self.passed = False
@@ -271,8 +271,12 @@ class TestResult(models.Model):
             json_compare(self.results,self.test_case.expected_results)
         except ValueError: #if the objects do not json decode properly, revert to the raw comparison
             raw_compare(self.results,self.test_case.expected_results)
-        except TypeError: #something went really badly wrong.....
+        """
+        except TypeError as e: #something went really badly wrong.....
+            import traceback
+            traceback.print_exc(e)
             self.passed = False
+        """
 
         self.was_checked = True
         self.save()
