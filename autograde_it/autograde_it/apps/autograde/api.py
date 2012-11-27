@@ -41,7 +41,7 @@ class ProjectMetaResource(ModelResource):
 class ProjectResource(ModelResource):
     tests = fields.ToManyField("autograde.api.TestCaseResource","testcase_set",full=True)
     project_files = fields.ToManyField("autograde.api.ProjectFileResource","projectfile_set",full=True)
-    project_meta = fields.ForeignKey("autograde.api.ProjectMetaResource","get_meta",full=True)
+    project_meta = fields.ForeignKey("autograde.api.ProjectMetaResource","get_meta",full=True,null=True)
     class Meta:
         queryset = Project.objects.all()
         resource_name = 'project'

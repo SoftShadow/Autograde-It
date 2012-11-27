@@ -1,10 +1,11 @@
 from django.db import models
 from django.db.models import permalink
-from zipfile import ZipFile
 
 from django.contrib.auth.models import User
 from django_extensions.db.fields import *
 
+from zipfile import ZipFile
+import json
 import os
 
 class Project(models.Model):
@@ -37,6 +38,57 @@ class Project(models.Model):
             raise ValueError("AUTOGRADE_PROJECT_META_MODEL invalid")
         return model.objects.get(project=self)
 
+    def add_zipfile(self,z):
+        """
+            Adds all of the files in z as student viewable project files.
+        """
+        import os
+        import tempfile
+
+        def path_split(path):
+            """
+                Generates a list of directories for a path.
+                Example: this/that/thing.jpg -> ['this','that','thing.jpg']
+            """
+            l = []
+            a,b = os.path.split(path)
+            if a:
+                for item in path_split(a):
+                    l.append(item)
+            l.append(b)
+            return l
+
+        names = [(name,path_split(name)) for name in z.namelist()]
+        dirs = {}
+
+        changed = True
+        i = 1
+        while changed:
+            changed = False
+            for name in [n for n in names if len(n[1])>=i]:
+                previous = None
+                changed = True
+                d = None
+                for index,item in enumerate(name[1][:-1]):
+                    if "/".join(item[0:index]) in dirs:
+                        d = dirs["/".join(item[0:index])]
+                    else:
+                        d = Directory.objects.create(project=self,directory=previous,name=item)
+                        previous = d
+                        dirs["/".join(item[0:index])] = d
+
+                from django.core.files import File
+                pf = ProjectFile.objects.create(directory=d,project=self)
+
+                f = tempfile.NamedTemporaryFile("w+r",delete=False)
+                f.write(z.open(name[0]).read())
+                f.seek(0)
+                pf.file.save(name[1][-1],File(f),save=True)
+                f.close()
+                os.unlink(f.name)
+
+            i+=1
+
     def zipfile(self):
         """
             Return the path to a zipfile for this project.
@@ -60,7 +112,7 @@ class Project(models.Model):
             f = open(file_name,"w")
             f.write(pf.file.read())
             f.close()
-            z.write(file_name,os.path.join(dir_path,os.path.basename(pf.file.name)))
+            z.write(file_name,os.path.join(os.path.join(dir_path,"project_files"),os.path.basename(pf.file.name)))
             os.remove(file_name)
         def add_directory(directory):
             """
@@ -202,8 +254,15 @@ class TestResult(models.Model):
             """
                 Compare the two json decoded inputs and mark the test as passed if they are the same objects
             """
-            import json
-            if json.loads(a) == json.loads(b):
+            # if the inputs are not str or unicode, hopefully they are already some type of object that can be compared.
+            # an error will be raised if the comparison is invalid
+            a_json = json.loads(a) if isinstance(a,str) else a
+            a_json = json.loads(str(a)) if isinstance(a,unicode) else a
+
+            b_json = json.loads(b) if isinstance(b,str) else b
+            b_json = json.loads(str(b)) if isinstance(b,unicode) else b
+
+            if a_json == b_json:
                 self.passed = True
             else:
                 self.passed = False
@@ -212,6 +271,8 @@ class TestResult(models.Model):
             json_compare(self.results,self.test_case.expected_results)
         except ValueError: #if the objects do not json decode properly, revert to the raw comparison
             raw_compare(self.results,self.test_case.expected_results)
+        except TypeError: #something went really badly wrong.....
+            self.passed = False
 
         self.was_checked = True
         self.save()

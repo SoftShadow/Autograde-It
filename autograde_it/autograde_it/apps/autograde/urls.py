@@ -20,6 +20,7 @@ urlpatterns = patterns('autograde.views',
 
     #project
     url(r'^project/(?P<pk>[\w\._-]+)$', DetailView.as_view(model=Project), name='project_detail'),
+    url(r'^project/(?P<pk>[\w\._-]+)/addzip$', addzip, name='project_addzip'),
     url(r'^projectzip/(?P<pk>[\w\._-]+)$', get_project_zip, name='get_project_zip'),
     url(r'^create/project/$', "project_create", name='project_create'),
 

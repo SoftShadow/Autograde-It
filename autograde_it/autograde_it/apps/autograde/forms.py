@@ -42,3 +42,9 @@ class DirectoryForm(forms.ModelForm):
     class Meta:
         model = Directory
         fields = ("name",)
+class ZipfileForm(forms.Form):
+    zip_file = forms.Field( widget=forms.FileInput() )
+    def save(self,project):
+        import zipfile
+        z = zipfile.ZipFile(self.cleaned_data['zip_file'])
+        project.add_zipfile(z)

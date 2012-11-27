@@ -114,3 +114,16 @@ def directory_create(request,project_pk,
         form_class=DirectoryForm,
         template_name="autograde/directory_edit.html"):
     return create(request,project_pk,directory_pk,form_class,template_name)
+
+@login_required
+def addzip(request,pk,
+        form_class=ZipfileForm,
+        template_name="autograde/project_addzip.html"):
+    project = get_object_or_404(Project,pk=pk)
+    form = form_class()
+    if request.method=="POST":
+        form = form_class(request.POST,request.FILES)
+        if form.is_valid():
+            form.save(project)
+            return HttpResponseRedirect(project.get_absolute_url())
+    return render_to_response(template_name,{"form":form},context_instance=RequestContext(request))

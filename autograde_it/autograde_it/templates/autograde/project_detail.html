@@ -24,6 +24,7 @@
         </div>
     {% endfor %}
     <a href="{% url projectfile_create project.pk %}">Add Project File</a>
+    <a href="{% url project_addzip project.pk %}">Add Zip File</a>
     <hr />
     <h4>All Tests</h4>
     {% for test_case in project.testcase_set.all %}
