@@ -31,7 +31,7 @@
         <h4>Test Results:</h4>
         {% for result in object.testresult_set.all %}
             <div>
-                <a href="{% url testresult_detail result.pk %}">{{result}}</a>
+                <a href="{% url testresult_detail result.pk %}">{{result}}</a> - {{result.created}}
             </div>
         {% endfor %}
     </p>
